@@ -9,9 +9,10 @@ import java.util.Map;
 public class CrawlResult {
 
     private String url;
+    private String title;
+    private int statusCode;
     private String status;
-    private String content;
-    private Map<String, String> metadata;
+    private  long durationMillis;
 
     public String getUrl() {
         return url;
@@ -29,40 +30,50 @@ public class CrawlResult {
         this.status = status;
     }
 
-    public String getContent() {
-        return content;
+    public String getTitle() {
+        return title;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
+    public int getStatusCode() {
+        return statusCode;
     }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+    public long getDurationMillis() {
+        return durationMillis;
+    }
+    public void setDurationMillis(long durationMillis) {
+        this.durationMillis = durationMillis;
     }
 
     public CrawlResult() {
         // Default constructor
     }
 
-    public CrawlResult(String url, String status, String content, Map<String, String> metadata) {
+    public CrawlResult(String url, String title, int statusCode, String status, long durationMillis) {
         this.url = url;
+        this.title = title;
+        this.statusCode = statusCode;
         this.status = status;
-        this.content = content;
-        this.metadata = metadata;
+        this.durationMillis = durationMillis;
     }
 
     @Override
     public String toString() {
         return "CrawlResult{" +
                 "url='" + url + '\'' +
+                ", title='" + title + '\'' +
+                ", statusCode=" + statusCode +
                 ", status='" + status + '\'' +
-                ", content='" + content + '\'' +
-                ", metadata=" + metadata +
+                ", durationMillis=" + durationMillis +
                 '}';
     }
+
+
+
 }

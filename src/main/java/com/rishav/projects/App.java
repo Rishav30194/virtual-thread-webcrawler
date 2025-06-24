@@ -27,7 +27,8 @@ public class App {
 
             for(String line : lines){
                 CrawlResult crawlResult = crawlerService.crawlUrl(line);
-                logger.log(Level.INFO, "Crawl Result for URL {0}: {1}", new Object[]{crawlResult.getUrl(), crawlResult.getStatus()});
+                logger.log(Level.INFO, "Crawl Result for URL {0}: {2}: {1}", new Object[]{crawlResult.getUrl(),
+                        crawlResult.getTitle(), crawlResult.getStatusCode()});
             }
 
         }

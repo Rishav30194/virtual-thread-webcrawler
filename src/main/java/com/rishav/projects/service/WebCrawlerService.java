@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Service class for web crawling operations.
@@ -29,24 +31,36 @@ public class WebCrawlerService {
     public CrawlResult crawlUrl(String url) {
 
         CrawlResult result = new CrawlResult();
+        result.setUrl(url);
         HttpGet httpGet = new HttpGet(url);
+        long startTime = System.nanoTime();
+
         try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
             try(CloseableHttpResponse response = httpClient.execute(httpGet)) {
-                logger.log(Level.INFO, String.valueOf(response.getCode()));
-                logger.log(Level.INFO, response.getReasonPhrase());
+
+                result.setStatusCode(response.getCode());
+                result.setStatus(response.getReasonPhrase());
+
                 HttpEntity entity = response.getEntity();
                 if(entity != null){
-                    result.setStatus("Crawled successfully");
-                    result.setUrl(url);
-                    result.setContent(entity.getContent().toString());
+                    String html = new String(entity.getContent().readAllBytes(), "UTF-8");
+
+                    Pattern pattern = Pattern.compile("<title>(.*?)</title>", Pattern.DOTALL);
+                    Matcher matcher = pattern.matcher(html);
+                    String title = matcher.find()? matcher.group(1).trim() : "No title found";
+                    result.setTitle(title); // Simple title extraction
+
                 } else {
                     result.setStatus("No content found for the URL: " + url);
                 }
             }
         }catch (IOException e) {
             result.setStatus("Error: " + e.getMessage());
-            return result;
         }
+
+        long endTime = System.nanoTime();
+        result.setDurationMillis((endTime-startTime)/1_000_000); // Convert to milliseconds
+        logger.log(Level.INFO, "Time take to crawl {0}: {1} ms", new Object[]{url, result.getDurationMillis()});
 
         return result;
     }
