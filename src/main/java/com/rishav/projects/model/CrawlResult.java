@@ -1,6 +1,5 @@
 package com.rishav.projects.model;
 
-import java.util.Map;
 
 /**
  * Represents the result of a web crawl operation.
