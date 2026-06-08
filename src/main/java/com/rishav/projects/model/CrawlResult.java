@@ -1,78 +1,38 @@
 package com.rishav.projects.model;
 
+import java.util.List;
 
 /**
- * Represents the result of a web crawl operation.
- * This class can be extended to include properties such as status, content, and metadata.
+ * Immutable result of fetching a single URL.
+ *
+ * @param url            the URL that was fetched
+ * @param depth          BFS depth at which this URL was reached (seeds are depth 0)
+ * @param statusCode     HTTP status code, or 0 if the request never completed
+ * @param status         a short human-readable status ("OK", "Forbidden", "ERROR: ...")
+ * @param title          the page's &lt;title&gt;, or "" when absent/unavailable
+ * @param durationMillis wall-clock time taken to fetch this URL, in milliseconds
+ * @param links          absolute http(s) links discovered on the page (empty on failure)
  */
-public class CrawlResult {
+public record CrawlResult(
+        String url,
+        int depth,
+        int statusCode,
+        String status,
+        String title,
+        long durationMillis,
+        List<String> links) {
 
-    private String url;
-    private String title;
-    private int statusCode;
-    private String status;
-    private  long durationMillis;
-
-    public String getUrl() {
-        return url;
+    public CrawlResult {
+        links = links == null ? List.of() : List.copyOf(links);
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    /** True when the request returned a 2xx status. */
+    public boolean ok() {
+        return statusCode >= 200 && statusCode < 300;
     }
 
-    public String getStatus() {
-        return status;
+    /** Convenience factory for a failed fetch (no response / exception). */
+    public static CrawlResult failure(String url, int depth, String error, long durationMillis) {
+        return new CrawlResult(url, depth, 0, "ERROR: " + error, "", durationMillis, List.of());
     }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-    public long getDurationMillis() {
-        return durationMillis;
-    }
-    public void setDurationMillis(long durationMillis) {
-        this.durationMillis = durationMillis;
-    }
-
-    public CrawlResult() {
-        // Default constructor
-    }
-
-    public CrawlResult(String url, String title, int statusCode, String status, long durationMillis) {
-        this.url = url;
-        this.title = title;
-        this.statusCode = statusCode;
-        this.status = status;
-        this.durationMillis = durationMillis;
-    }
-
-    @Override
-    public String toString() {
-        return "CrawlResult{" +
-                "url='" + url + '\'' +
-                ", title='" + title + '\'' +
-                ", statusCode=" + statusCode +
-                ", status='" + status + '\'' +
-                ", durationMillis=" + durationMillis +
-                '}';
-    }
-
-
-
 }
